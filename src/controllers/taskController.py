@@ -2,7 +2,11 @@ from flask import jsonify, request
 from bson import ObjectId
 
 def get_all_tasks(mongo):
-    tasks = mongo.db.tasks.find()
+    query = (request.args.to_dict())
+    custom_query = {}
+    if query and query.get("status") != None:
+        custom_query["status"] = (query.get("status") == "true") if True else False
+    tasks = mongo.db.tasks.find(custom_query)
     task_list = [{"id": str(task["_id"]), "name": task["name"], "status": task["status"]} for task in tasks]
     return jsonify(task_list), 200
 
